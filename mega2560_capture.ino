@@ -15,6 +15,7 @@
 // =============================================================================
 
 #define TRIGGER_PIN 2
+#define LED_PIN     13
 
 volatile bool     g_triggered  = false;
 volatile uint8_t  g_portA      = 0;
@@ -36,6 +37,10 @@ ISR(INT4_vect) {
 
 void setup() {
     Serial.begin(115200);
+
+    // --- Configure LED ---
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
 
     // --- Configure data ports as inputs, no pull-ups ---
     DDRA  = 0x00;  PORTA = 0x00;  // Port A: pins 22-29
@@ -86,5 +91,10 @@ void loop() {
         char buf[32];
         snprintf(buf, sizeof(buf), "T:%08lu,0x%08lX", ts, state);
         Serial.println(buf);
+
+        // Blink LED to indicate a capture occurred
+        digitalWrite(LED_PIN, HIGH);
+        delay(50);
+        digitalWrite(LED_PIN, LOW);
     }
 }
